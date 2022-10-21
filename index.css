@@ -10,12 +10,12 @@ div {
   width: auto;
 }
 
-div.word {
+div.syllable {
   display: inline;
 }
 
-div.syllable {
-  display: inline;
+div.line {
+  height: 10px;
 }
 
 div.current {

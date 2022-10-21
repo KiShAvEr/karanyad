@@ -52,8 +52,8 @@ window.onkeydown = (ev) => {
 
     console.log(`${mins}:${secs}`)
 
-    if(lineEnds.includes(counter)) {
-      window.scrollBy(0, 40)
+    if(lineEnds.includes(counter+1)) {
+      window.scrollBy(0, 30)
       lrc += `\n [${mins}:${secs}]`
     }
 
