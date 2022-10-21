@@ -1,11 +1,27 @@
 body {
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
 }
 
 div {
   margin-bottom: 20px;
   height: auto;
   width: auto;
+}
+
+div.word {
+  display: inline;
+}
+
+div.syllable {
+  display: inline;
+}
+
+div.current {
+  color: green;
+}
+
+div.past {
+  color: red
 }

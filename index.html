@@ -12,9 +12,17 @@
   <div style="display: block">
     <input type="file" accept="audio/*" id="audio">
     <button id="play-button" type="submit">Play</button>
+    <button id="getlrc-button" type="button">Copy LRC</button>
   </div>
   <div>
-    <textarea id="lyrics"></textarea>
+    <button id="enter-lyrics" type="button">Enter lyrics</button>
+    <dialog id="lyrics-dialog" >
+      <textarea id="lyrics"></textarea>
+      <button id="save-lyrics">Save</button>
+    </dialog>    
+  </div>
+  <div id="lyrics-display" style="margin: auto; width: auto; text-align: center;">
+    
   </div>
 </body>
 </html>

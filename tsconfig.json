@@ -3,6 +3,7 @@
     "module": "ESNext",
     "target": "ESNext",
     "removeComments": true,
+    "lib": ["ESNext", "DOM"],
     "preserveConstEnums": true,
     "sourceMap": true,
     "strict": true,
