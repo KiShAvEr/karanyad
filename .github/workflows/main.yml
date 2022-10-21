@@ -1,0 +1,33 @@
+name: build-tsc
+
+on: [push]
+
+permissions: write-all
+
+
+jobs:
+  build-deploy:
+    name: Build and push ts
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 16
+    - name: switch to right branch and get changes
+      run: | 
+        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git fetch
+        git checkout gh-pages
+        git reset --hard main
+    - name: install typescript
+      run: npm i typescript --save-dev
+    - name: builds tsc
+      run: tsc --build --verbose --force
+    - name: Commit files
+      run: |
+        git add -f index.js index.js.map
+        git commit -m "Autopushed build files" -a
+        git push --force
