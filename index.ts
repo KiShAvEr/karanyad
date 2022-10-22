@@ -6,6 +6,12 @@ const copyButton = <HTMLButtonElement>document.getElementById("getlrc-button")
 const lyricsButton = <HTMLButtonElement>document.getElementById("enter-lyrics")
 const dialog = <HTMLDialogElement>document.getElementById("lyrics-dialog")
 const saveLyrics = <HTMLButtonElement>document.getElementById("save-lyrics")
+const speedUp = <HTMLButtonElement>document.getElementById("speedupbutton")
+const speedDown = <HTMLButtonElement>document.getElementById("speedup")
+const speed = <HTMLButtonElement>document.getElementById("speed")
+
+const pause = <HTMLButtonElement>document.getElementById("pause")
+const stopButton = <HTMLButtonElement>document.getElementById("stop")
 
 let isPlaying = false;
 let fasz: HTMLDivElement[] = [];
@@ -41,6 +47,15 @@ const lyricsDisplay = <HTMLDivElement>document.getElementById("lyrics-display")
 
 let lrc = ""
 
+stopButton.onclick = (ev) => {
+  playah?.pause()
+  playah && (playah.src = playah.src)
+}
+
+pause.onclick = () => {
+  playah?.pause
+}
+
 window.onkeydown = (ev) => {
   const time = playah?.currentTime ?? "0";
 
@@ -74,6 +89,16 @@ window.onkeydown = (ev) => {
   }
 }
 
+speedUp.onclick = () => {
+  playah && (playah.playbackRate += 0.1)
+  speed.innerText = playah?.playbackRate.toString() || ""
+}
+
+speedDown.onclick = () => {
+  playah && (playah.playbackRate -= 0.1)
+  speed.innerText = playah?.playbackRate.toString() || ""
+}
+
 lyricsButton.onclick = (ev) => {
   dialog.open = !dialog.open
   lyricsInput.value = lyricsProxy.lyrics
@@ -84,13 +109,19 @@ playButton.onclick = async (ev) => {
   ev.preventDefault()
 
   if(fileInput.files?.length) {
-    let reader = new FileReader()
-    reader.onload = ev => {
-      playah = new Audio(ev.target?.result as string)
+    if(playah == undefined) {
+
+      let reader = new FileReader()
+      reader.onload = ev => {
+        playah = new Audio(ev.target?.result as string)
+        playah.play()
+      }
+      reader.readAsDataURL(fileInput.files?.[0] ?? new Blob())
+      isPlaying = true;
+    }
+    else {
       playah.play()
     }
-    reader.readAsDataURL(fileInput.files?.[0] ?? new Blob())
-    isPlaying = true;
   } else {
     alert("You must select an audio file")
   }
