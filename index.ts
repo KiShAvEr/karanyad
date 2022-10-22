@@ -6,8 +6,8 @@ const copyButton = <HTMLButtonElement>document.getElementById("getlrc-button")
 const lyricsButton = <HTMLButtonElement>document.getElementById("enter-lyrics")
 const dialog = <HTMLDialogElement>document.getElementById("lyrics-dialog")
 const saveLyrics = <HTMLButtonElement>document.getElementById("save-lyrics")
-const speedUp = <HTMLButtonElement>document.getElementById("speedupbutton")
-const speedDown = <HTMLButtonElement>document.getElementById("speedup")
+const speedUp = <HTMLButtonElement>document.getElementById("speedup")
+const speedDown = <HTMLButtonElement>document.getElementById("speeddown")
 const speed = <HTMLButtonElement>document.getElementById("speed")
 
 const pause = <HTMLButtonElement>document.getElementById("pause")
@@ -53,7 +53,7 @@ stopButton.onclick = (ev) => {
 }
 
 pause.onclick = () => {
-  playah?.pause
+  playah?.pause()
 }
 
 window.onkeydown = (ev) => {
@@ -90,6 +90,7 @@ window.onkeydown = (ev) => {
 }
 
 speedUp.onclick = () => {
+  console.log(playah)
   playah && (playah.playbackRate += 0.1)
   speed.innerText = playah?.playbackRate.toString() || ""
 }
