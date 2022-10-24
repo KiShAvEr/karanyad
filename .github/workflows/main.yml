@@ -28,6 +28,6 @@ jobs:
       run: tsc --build --verbose --force
     - name: Commit files
       run: |
-        git add -f index.js index.js.map
+        git add -f index.js
         git commit -m "Autopushed build files" -a
         git push --force
