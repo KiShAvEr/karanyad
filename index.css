@@ -4,6 +4,10 @@ body {
   overflow-x: hidden;
 }
 
+p {
+  display: inline;
+}
+
 div {
   margin-bottom: 20px;
   height: auto;

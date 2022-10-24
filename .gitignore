@@ -1,6 +1,4 @@
 .vscode
 dist
 index.js
-index.js.map
-*.txt
 node_modules

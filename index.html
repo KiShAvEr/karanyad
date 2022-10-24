@@ -5,7 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Karanyádat</title>
-  <script defer src="index.js"></script>
+  <script data-main="index" defer src="require.js"></script>
   <link rel="stylesheet" href="index.css">
 </head>
 <body>
@@ -14,10 +14,13 @@
     <button id="play-button" type="submit">Play</button>
     <button id="getlrc-button" type="button">Copy LRC</button>
     <button id="speeddown">Speed Down</button>
-    <div id="speed"></div>
+    <p id="speed"></p>
     <button id="speedup">Speed up</button>
     <button id="pause">Pause</button>
     <button id="stop">Stop</button>
+    <p id="curTime">0:00</p>
+    <input type="range" id="seek" value="0" max=""/>
+    <p id="maxTime">0:00</p>
   </div>
   <div>
     <button id="enter-lyrics" type="button">Enter lyrics</button>
