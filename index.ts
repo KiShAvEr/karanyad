@@ -120,10 +120,10 @@ window.onkeydown = (ev) => {
     // if(lrc[lrc.length-1] != ">") lrc += `<${mins}:${secs}>`
   }
   else if(ev.key == "Backspace" && curSyl) {
-    ev.preventDefault()
-    ev.stopPropagation()
+    ev.preventDefault();
+    ev.stopPropagation();
 
-    curSyl.element?.classList.remove("current")
+    (curSyl.prev || curLine?.prev?.tail) && curSyl.element?.classList.remove("current")
 
     curSyl.start = undefined;
     curSyl.end = undefined
@@ -145,7 +145,7 @@ window.onkeydown = (ev) => {
     curSyl.element?.classList.remove("past")
     curSyl.element?.classList.add("current")
 
-    playah && (playah.currentTime = Math.max(((curSyl.prev?.start?.stamp ?? curLine?.prev?.tail.start?.stamp ) ?? 0) - 1), playah.currentTime - 4)
+    playah && (playah.currentTime = Math.max((((curSyl.prev?.start?.stamp ?? curLine?.prev?.tail.start?.stamp ) ?? 0) - 1), playah.currentTime - 4))
 
   }
 }
