@@ -1,4 +1,7 @@
 .vscode
 dist
 index.js
+index.js.map
+*.txt
+*.lrc
 node_modules

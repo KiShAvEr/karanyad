@@ -79,6 +79,12 @@ window.onkeydown = (ev) => {
     ev.preventDefault()
     ev.stopPropagation()
 
+    console.log(curSyl?.prev?.start, time)
+
+    if(curSyl?.prev?.start && curSyl.prev.start.stamp > time) {
+      return
+    }
+
     curSyl && (curSyl.start = new Timing(time))
 
     curSyl?.element?.classList.add("past")
@@ -108,13 +114,16 @@ window.onkeydown = (ev) => {
 
     // if(lrc[lrc.length-1] != ">") lrc += `<${mins}:${secs}>`
   }
-  else if(ev.key == "Backspace") {
+  else if(ev.key == "Backspace" && curSyl) {
     ev.preventDefault()
     ev.stopPropagation()
 
-    curSyl?.element?.classList.remove("current")
+    curSyl.element?.classList.remove("current")
 
-    if(curSyl?.prev == undefined) {
+    curSyl.start = undefined;
+    curSyl.end = undefined
+
+    if(curSyl.prev == undefined) {
       curLine = curLine?.prev
       if(curLine == undefined) {
         return
@@ -126,10 +135,12 @@ window.onkeydown = (ev) => {
       curSyl = curSyl.prev
     }
 
+    curSyl.end = undefined
+
     curSyl.element?.classList.remove("past")
     curSyl.element?.classList.add("current")
 
-    playah && (playah.currentTime = curSyl.prev?.start?.stamp || curLine?.prev?.tail.start?.stamp || 0)
+    playah && (playah.currentTime = ((curSyl.prev?.start?.stamp ?? curLine?.prev?.tail.start?.stamp ) ?? 0) - 1)
 
   }
 }
@@ -160,22 +171,31 @@ playButton.onclick = async (ev) => {
       reader.onload = ev => {
         playah = new Audio(ev.target?.result as string)
         playah.preload = "metadata"
-        playah.play()
-
-        setTimeout(() => {
+        playah.onplaying = () => {
           const mins = Math.floor((playah?.duration || 0)/60)
-          const secs = ((playah?.duration || 0)%60).toFixed(0)
+          const secs = ((playah?.duration || 0)%60).toLocaleString('nl-NL', {
+            minimumIntegerDigits: 2,
+            useGrouping: false,
+            maximumFractionDigits: 0
+          })
           timeInput.max = playah?.duration.toString() || ""
           maxTime.innerText = `${mins}:${secs}`
-        }, 200)
+        }
 
+        playah.play()
         
         playah.ontimeupdate = () => {
           const mins = Math.floor((playah?.currentTime || 0)/60)
-          const secs = ((playah?.currentTime || 0)%60).toFixed(0)
+          const secs = ((playah?.currentTime || 0)%60).toLocaleString('nl-NL', {
+            minimumIntegerDigits: 2,
+            useGrouping: false,
+            maximumFractionDigits: 0
+          })
           curTime.innerText = `${mins}:${secs}`
           !dragging && (timeInput.value = playah?.currentTime.toString() || timeInput.value)
         }
+
+
         
       }
       reader.readAsDataURL(fileInput.files?.[0] ?? new Blob())
