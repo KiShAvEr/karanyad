@@ -145,7 +145,7 @@ window.onkeydown = (ev) => {
     curSyl.element?.classList.remove("past")
     curSyl.element?.classList.add("current")
 
-    playah && (playah.currentTime = ((curSyl.prev?.start?.stamp ?? curLine?.prev?.tail.start?.stamp ) ?? 0) - 1)
+    playah && (playah.currentTime = Math.max(((curSyl.prev?.start?.stamp ?? curLine?.prev?.tail.start?.stamp ) ?? 0) - 1), playah.currentTime - 4)
 
   }
 }
