@@ -123,6 +123,8 @@ window.onkeydown = (ev) => {
     ev.preventDefault();
     ev.stopPropagation();
 
+    if(curSyl.prev == undefined && curLine?.prev?.tail == undefined) return
+
     (curSyl.prev || curLine?.prev?.tail) && curSyl.element?.classList.remove("current")
 
     curSyl.start = undefined;
@@ -133,7 +135,7 @@ window.onkeydown = (ev) => {
       if(curLine == undefined) {
         return
       }
-
+      window.scrollBy(0, -30)
       curSyl = curLine.tail
     }
     else {
