@@ -110,7 +110,12 @@ window.onkeydown = (ev) => {
     ev.preventDefault()
     ev.stopPropagation()
 
-    curSyl && (curSyl.end = new Timing(time))
+    if(curSyl?.prev) {
+      curSyl.prev.end = new Timing(time)
+    }
+    else if(curLine?.prev?.tail) {
+      curLine.prev.tail.end = new Timing(time)
+    }
 
     // if(lrc[lrc.length-1] != ">") lrc += `<${mins}:${secs}>`
   }
