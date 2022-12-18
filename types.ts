@@ -80,7 +80,7 @@ export class Line {
       res += `${cur.toString()} =>`
       cur = cur.next
     }
-    res += "]"
+    res += "] "
     return res
   }
 }
