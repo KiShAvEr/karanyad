@@ -106,7 +106,7 @@ export class Timing {
   constructor(public stamp: number){}
 
   getFormatted = (): string => {
-    const mins = Math.round((+this.stamp)/60)
+    const mins = Math.floor((+this.stamp)/60)
     const secs = ((+this.stamp)%60).toFixed(2)
     return `${mins}:${secs}`
   }
