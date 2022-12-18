@@ -106,8 +106,14 @@ export class Timing {
   constructor(public stamp: number){}
 
   getFormatted = (): string => {
-    const mins = Math.floor((+this.stamp)/60)
-    const secs = ((+this.stamp)%60).toFixed(2)
+    const mins = Math.floor((+this.stamp)/60).toLocaleString('en-US', {
+      minimumIntegerDigits: 2,
+      maximumFractionDigits: 0
+    })
+    const secs = ((+this.stamp)%60).toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      minimumIntegerDigits: 2
+    })
     return `${mins}:${secs}`
   }
 }
