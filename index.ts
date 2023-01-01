@@ -1,24 +1,9 @@
 import { Line, Lyrics, Syllable, Timing } from "./types"
 
-const fileInput = <HTMLInputElement>document.getElementById("audio")
-const playButton = <HTMLButtonElement>document.getElementById("play-button")
-const copyButton = <HTMLButtonElement>document.getElementById("getlrc-button")
-const lyricsButton = <HTMLButtonElement>document.getElementById("enter-lyrics")
-const dialog = <HTMLDialogElement>document.getElementById("lyrics-dialog")
-const saveLyrics = <HTMLButtonElement>document.getElementById("save-lyrics")
-const speedUp = <HTMLButtonElement>document.getElementById("speedup")
-const speedDown = <HTMLButtonElement>document.getElementById("speeddown")
-const speed = <HTMLButtonElement>document.getElementById("speed")
-const pause = <HTMLButtonElement>document.getElementById("pause")
-const stopButton = <HTMLButtonElement>document.getElementById("stop")
-const timeInput = <HTMLInputElement>document.getElementById("seek")
-const curTime = <HTMLParagraphElement>document.getElementById("curTime")
-const maxTime = <HTMLParagraphElement>document.getElementById("maxTime")
-
+let timingsShowing = false;
 let playah: HTMLAudioElement | undefined;
 let isPlaying = false;
 let lyricsDOM: HTMLDivElement[] = [];
-let counter = 0;
 let lineEnds: number[] = [0]
 let lyricsProxy = new Proxy({lyrics: ""}, {
   set: (target, key: string, value) => {
@@ -49,10 +34,6 @@ let lyricsProxy = new Proxy({lyrics: ""}, {
   }
 })
 
-const lyricsInput = <HTMLTextAreaElement>document.getElementById("lyrics")
-
-const lyricsDisplay = <HTMLDivElement>document.getElementById("lyrics-display")
-
 let lrc = new Lyrics()
 let curLine: Line | undefined;
 let curSyl: Syllable | undefined;
@@ -70,16 +51,15 @@ pause.onclick = () => {
 window.onkeydown = (ev) => {
   const time = playah?.currentTime ?? 0;
 
-  const mins = Math.floor((time)/60)
-  const secs = ((time)%60).toFixed(2)
+  if(ev.key == "Escape")
+    dialog.open = false;
+
   if(!isPlaying) {
     return
   }
   if(ev.key == " ") {
     ev.preventDefault()
     ev.stopPropagation()
-
-    console.log(curSyl?.prev?.start, time)
 
     if(curSyl?.prev?.start && curSyl.prev.start.stamp > time) {
       return
@@ -99,12 +79,6 @@ window.onkeydown = (ev) => {
       window.scrollBy(0, 30)
     }
     curSyl?.element?.classList.add("current")
-
-    // lyricsDOM[counter]?.classList.add("past")
-    // lyricsDOM[counter]?.classList.remove("current")
-    // lyricsDOM[++counter]?.classList.add("current")
-
-
   }
   else if(ev.key == "Enter") {
     ev.preventDefault()
@@ -117,7 +91,6 @@ window.onkeydown = (ev) => {
       curLine.prev.tail.end = new Timing(time)
     }
 
-    // if(lrc[lrc.length-1] != ">") lrc += `<${mins}:${secs}>`
   }
   else if(ev.key == "Backspace" && curSyl) {
     ev.preventDefault();
@@ -254,10 +227,6 @@ const getDisplayHTML = (lyricsRaw: string): string => {
   curSyl = curLine.head
 
   result = lines.reduce((prev, cur) => `${prev}<div class="line">${cur}</div>`, "")
-
-  for(let i of lrc) {
-    console.log(i)
-  }
 
   return result
 }
