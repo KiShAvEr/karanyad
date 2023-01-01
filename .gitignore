@@ -5,3 +5,4 @@ index.js.map
 *.txt
 *.lrc
 node_modules
+*.mp3
