@@ -27,6 +27,9 @@ let lyricsProxy = new Proxy({lyrics: ""}, {
       let counter = 0;
       for(let i of lrc) {
         i.element = lyricsDOM[counter++]
+        i.element.onclick = () => {
+          console.log(i.start?.getFormatted(), i.end?.getFormatted() ?? i.getNext()?.start?.getFormatted())
+        }
       }
 
     }
@@ -200,13 +203,13 @@ const getDisplayHTML = (lyricsRaw: string): string => {
   const lines = result.split("\n").filter(el => el.length > 0 && el != " ").map((el, index, arr) => {
     const syllables = el.trim().split(" ").map(el => el + " " ).map(el => el.split("/")).flat()
 
-    currLine.head = new Syllable();
+    currLine.head = new Syllable(currLine);
     let currSyllable = currLine.head;
     currLine.tail = currSyllable
     for(let i in syllables) {
       currSyllable.text = syllables[i];
       if(syllables.length > +i+1) {
-        currSyllable.next = new Syllable()
+        currSyllable.next = new Syllable(currLine)
         currSyllable.next.prev = currSyllable;
         currSyllable = currSyllable.next
         currLine.tail = currSyllable

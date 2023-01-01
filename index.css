@@ -16,6 +16,7 @@ div {
 
 div.syllable {
   display: inline;
+  cursor: pointer;
 }
 
 div.line {
