@@ -1,5 +1,100 @@
 import { Line, Lyrics, Syllable, Timing } from "./types"
 
+let makeDialog = (startTime: string, endTime?: string) => {
+  console.log(startTime, endTime)
+  let dialog = document.createElement("dialog")
+  dialog.innerText = `${startTime} - ${endTime}`
+  dialog.open = true
+  dialog.style.position = "fixed"
+  dialog.style.top = "30px"
+  dialog.style.display = "flex"
+  dialog.style.flexDirection = "column"
+
+  return dialog
+}
+
+let makeAdjust = (side: "end" | "start", i: Syllable, dialog: HTMLDialogElement) => {
+  let adjust = document.createElement("div")
+  adjust.style.display = "flex"
+  adjust.style.flexDirection = "column"
+
+  let up = document.createElement("button")
+  up.type = "button"
+  up.onclick = (ev) => {changeTiming(ev, i, dialog, "up", side)}
+  up.innerText = "up"
+  let down = document.createElement("button")
+  down.type = "button"
+  down.onclick = (ev) => {changeTiming(ev, i, dialog, "down", side)}
+  down.innerText = "down"
+
+  adjust.appendChild(up)
+  adjust.appendChild(down)
+  
+  return adjust
+}
+
+let playSound = (ev: MouseEvent, i: Syllable) => {
+  ev.stopPropagation()
+  ev.preventDefault()
+
+  if(!i.start || !i.end) return
+
+  if(playah) {
+    playah.pause()
+    playah.currentTime = i.start.getStamp()
+    setTimeout(() => {
+      playah?.pause()
+    }, (i.end.getStamp()-i.start.getStamp()) * 1000)
+
+    playah.play()
+
+  }
+
+}
+
+let changeTiming = (ev: MouseEvent, i: Syllable, dialog: HTMLDialogElement, direction: "up" | "down", side: "end" | "start") => {
+  ev.preventDefault()
+  ev.stopPropagation()
+
+  let mult = direction == "up"? 1: -1
+  if(!i.start) return
+  if(!i.end) {
+    i.end = new Timing(i.start.getStamp());
+  }
+  let selfstart = i.start.getStamp()
+  let selfend = i.end.getStamp()
+  let beforeend = i.getPrev()?.end?.getStamp() ?? i.getPrev()?.start?.getStamp() ?? 0
+  let afterstart = i.getNext()?.start?.getStamp() ?? Infinity
+
+  if(side == "end") {
+    if(selfstart + 0.01 * mult < selfend && selfstart + 0.01 * mult > beforeend) {
+      i.start.manualModification += 0.01 * mult
+    }
+  } else {
+    if(selfend + 0.01 * mult < afterstart && selfend + 0.01 * mult > selfstart) {
+      i.end.manualModification += 0.01 * mult
+    }
+  }
+  
+  
+  
+  let children = Array.from(dialog.children)
+  dialog.innerText = `${i.start.getFormatted()} - ${(i.end? i.end: i.getNext()?.start)?.getFormatted()}`
+  for(let index = 0; index < children.length; index++) {
+    dialog.appendChild(children[index])
+  }
+  if(playah) {
+    playah.pause()
+    playah.currentTime = i.start.getStamp()
+    setTimeout(() => {
+      playah?.pause()
+    }, (selfend-selfstart) * 1000)
+
+    playah.play()
+
+  }
+}
+
 let timingsShowing = false;
 let playah: HTMLAudioElement | undefined;
 let isPlaying = false;
@@ -28,20 +123,70 @@ let lyricsProxy = new Proxy({ lyrics: "" }, {
       for (let i of lrc) {
         i.element = lyricsDOM[counter++]
         i.element.onclick = () => {
-          if (i.start?.getFormatted() && (i.end?.getFormatted() ?? i.getNext()?.start?.getFormatted())) {
-            let dialog = document.createElement("dialog")
-            dialog.innerText = `${i.start?.getFormatted()} - ${i.end?.getFormatted() ?? i.getNext()?.start?.getFormatted()}`
-            dialog.open = true
-            dialog.style.position = "fixed"
-            dialog.style.top = "30px"
+          if (i.start?.getFormatted()) {
+            
+            let dialog = makeDialog(i.start?.getFormatted(), i.end?.getFormatted() ?? i.getNext()?.start?.getFormatted() ?? i.start.getFormatted())
+
+            let syltext = document.createElement("div")
+            syltext.innerText = i.text
+            dialog.appendChild(syltext)
+
+            let adjust = document.createElement("div")
+            adjust.style.display = "flex"
+            adjust.style.flexDirection = "row"
+
+            let adjustStart = makeAdjust("start", i, dialog)
+            let adjustEnd = makeAdjust("end", i, dialog)
+            
+            adjust.appendChild(adjustEnd)
+            adjust.appendChild(adjustStart)
+            
+            dialog.appendChild(adjust)
 
             let closeButton = document.createElement("button")
 
             closeButton.onclick = () => document.querySelector("body")?.removeChild(dialog)
 
+            closeButton.innerText = "close"
+
             dialog.appendChild(closeButton)
 
             document.querySelector("body")?.appendChild(dialog)
+
+            let movebuttons = document.createElement("div")
+            let prevbutton = document.createElement("button")
+            prevbutton.type = "button"
+            prevbutton.innerText = "prev"
+            prevbutton.onclick = (ev) => {
+              ev.preventDefault()
+              ev.stopPropagation()
+              document.querySelector("body")?.removeChild(dialog)
+              i.getPrev()?.element?.click()
+            }
+            let nextbutton = document.createElement("button")
+            nextbutton.type = "button"
+            nextbutton.innerText = "next"
+            nextbutton.onclick = (ev) => {
+              ev.preventDefault()
+              ev.stopPropagation()
+              document.querySelector("body")?.removeChild(dialog)
+              i.getNext()?.element?.click()
+            }
+
+            movebuttons.appendChild(prevbutton)
+            movebuttons.appendChild(nextbutton)
+
+            dialog.appendChild(movebuttons)
+
+            let playbutton = document.createElement("button")
+            playbutton.type = "button"
+            playbutton.innerText = "play"
+            playbutton.onclick = (ev) => {
+              playSound(ev, i)
+            }
+
+            dialog.appendChild(playbutton)
+
           }
         }
       }
@@ -89,7 +234,9 @@ window.onkeydown = (ev) => {
 
     let delay = 100
 
-    curSyl && (curSyl.start = new Timing(time - delay / 1000))
+    curSyl && (curSyl.start = new Timing(Math.max(time - delay / 1000, 0)))
+
+    curSyl && curSyl.getPrev() && ((curSyl.getPrev() as Syllable).end = new Timing(Math.max(time - delay / 1000, 0)))
 
     curSyl?.element?.classList.add("past")
     curSyl?.element?.classList.remove("current")
@@ -315,3 +462,4 @@ timeInput.onchange = () => {
 timeInput.oninput = (ev) => {
   dragging = true
 };
+

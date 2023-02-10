@@ -104,7 +104,11 @@ export class Syllable {
   }
 
   getNext = () => {
-    return this.next || this.line?.next?.head
+    return this.next ?? this.line?.next?.head
+  }
+  
+  getPrev = () => {
+    return this.prev ?? this.line?.prev?.tail
   }
 
 }
