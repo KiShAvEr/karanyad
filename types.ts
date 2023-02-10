@@ -113,6 +113,10 @@ export class Timing {
   constructor(public stamp: number){}
   manualModification: number = 0
 
+  getStamp = (): number => {
+    return this.stamp + this.manualModification
+  }
+
   getFormatted = (): string => {
     const mins = Math.floor((+this.stamp+this.manualModification)/60).toLocaleString('en-US', {
       minimumIntegerDigits: 2,

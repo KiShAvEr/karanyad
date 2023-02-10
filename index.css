@@ -23,10 +23,10 @@ div.line {
   height: 10px;
 }
 
-div.current {
-  color: green;
-}
-
 div.past {
   color: red
+}
+
+div.current {
+  color: green;
 }
