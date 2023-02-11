@@ -286,10 +286,16 @@ window.onkeydown = (ev) => {
       curSyl = curSyl.prev
     }
 
-    curSyl.end = undefined
-
+    
     curSyl.element?.classList.remove("past")
     curSyl.element?.classList.add("current")
+    
+    if(curSyl.getPrev() && (curSyl.start?.getStamp() == curSyl.getPrev()?.end?.getStamp())) {
+      (curSyl.getPrev() as Syllable).end = undefined
+    }
+    
+    curSyl.end = undefined
+    curSyl.start = undefined
 
     playah && (playah.currentTime = Math.max((((curSyl.prev?.start?.getStamp() ?? curLine?.prev?.tail.start?.getStamp()) ?? 0) - 1), playah.currentTime - 4))
 
