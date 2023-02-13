@@ -250,6 +250,9 @@ window.onkeydown = (ev) => {
       window.scrollBy(0, 30)
     }
     curSyl?.element?.classList.add("current")
+
+    console.log(curSyl, curSyl?.getNext())
+
   }
   else if (ev.key == "Enter") {
     ev.preventDefault()
@@ -293,7 +296,7 @@ window.onkeydown = (ev) => {
     if(curSyl.getPrev() && (curSyl.start?.getStamp() == curSyl.getPrev()?.end?.getStamp())) {
       (curSyl.getPrev() as Syllable).end = undefined
     }
-    
+
     curSyl.end = undefined
     curSyl.start = undefined
 
@@ -409,10 +412,10 @@ const getDisplayHTML = (lyricsRaw: string): string => {
     sublines.push(curline)
     
     let res: string[] = []
-    
-    for(el of sublines) {
-      const syllables = el.trim().split(" ").map(el => el + " ").map(el => el.split("/")).flat()
 
+    sublines.forEach((el, idx) => {
+      const syllables = el.trim().split(" ").map(el => el + " ").map(el => el.split("/")).flat()
+  
       currLine.head = new Syllable(currLine);
       let currSyllable = currLine.head;
       currLine.tail = currSyllable
@@ -425,15 +428,24 @@ const getDisplayHTML = (lyricsRaw: string): string => {
           currLine.tail = currSyllable
         }
       }
-  
-      if (arr.length > index + 1) {
+
+      if(idx + 1 < sublines.length) {
+        console.log(idx, sublines.length)
         currLine.next = new Line()
         currLine.next.prev = currLine
         currLine = currLine.next
         lrc.tail = currLine
       }
   
+  
       res.push(syllables.reduce((prev, cur) => `${prev}<div class="syllable">${cur}</div>`, ""))
+    })
+
+    if (arr.length > index + 1) {
+      currLine.next = new Line()
+      currLine.next.prev = currLine
+      currLine = currLine.next
+      lrc.tail = currLine
     }
 
     return res
